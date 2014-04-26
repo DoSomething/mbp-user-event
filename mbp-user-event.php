@@ -28,7 +28,7 @@ $credentials = array(
 );
 
 $config = array(
-  'directUserEvents' => array(
+  'exchange' => array(
     'name' => getenv("MB_USER_EVENT_EXCHANGE"),
     'type' => getenv("MB_USER_EVENT_EXCHANGE_TYPE"),
     'passive' => getenv("MB_USER_EVENT_EXCHANGE_PASSIVE"),
@@ -36,29 +36,29 @@ $config = array(
     'auto_delete' => getenv("MB_USER_EVENT_EXCHANGE_AUTO_DELETE"),
   ),
   'queue' => array(
-    0 => array(
-        'name' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE"),
-        'passive' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_PASSIVE"),
-        'durable' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_DURABLE"),
-        'exclusive' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_EXCLUSIVE"),
-        'auto_delete' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_AUTO_DELETE"),
-        'bindingKey' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_BINDING_KEY"),
+    array(
+      'name' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE"),
+      'passive' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_PASSIVE"),
+      'durable' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_DURABLE"),
+      'exclusive' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_EXCLUSIVE"),
+      'auto_delete' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_AUTO_DELETE"),
+      'bindingKey' => getenv("MB_USER_EVENT_BIRTHDAY_QUEUE_BINDING_KEY"),
     ),
-    1 => array(
-        'name' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE"),
-        'passive' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_PASSIVE"),
-        'durable' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_DURABLE"),
-        'exclusive' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_EXCLUSIVE"),
-        'auto_delete' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_AUTO_DELETE"),
-        'bindingKey' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_BINDING_KEY"),
+    array(
+      'name' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE"),
+      'passive' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_PASSIVE"),
+      'durable' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_DURABLE"),
+      'exclusive' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_EXCLUSIVE"),
+      'auto_delete' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_AUTO_DELETE"),
+      'bindingKey' => getenv("MB_USER_EVENT_13BIRTHDAY_QUEUE_BINDING_KEY"),
     ),
-    2 => array(
-        'name' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE"),
-        'passive' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE_PASSIVE"),
-        'durable' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE_DURABLE"),
-        'exclusive' => getenv("MB_USER_EVENT_ANNIVERSARYP_QUEUE_EXCLUSIVE"),
-        'auto_delete' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE_AUTO_DELETE"),
-        'bindingKey' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE_BINDING_KEY"),
+    array(
+      'name' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE"),
+      'passive' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE_PASSIVE"),
+      'durable' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE_DURABLE"),
+      'exclusive' => getenv("MB_USER_EVENT_ANNIVERSARYP_QUEUE_EXCLUSIVE"),
+      'auto_delete' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE_AUTO_DELETE"),
+      'bindingKey' => getenv("MB_USER_EVENT_ANNIVERSARY_QUEUE_BINDING_KEY"),
     ),
   ),
 );
@@ -66,15 +66,19 @@ $config = array(
 $status = NULL;
 
 // Kick off
-$mbpUserEvent = new MBC_UserEvent($credentials, $config);
-
 // Gather users (email) of todays birthdays
+$config['routingKey'] = getenv("MB_USER_EVENT_BIRTHDAY_ROUTING_KEY");
+$mbpUserEvent = new MBC_UserEvent($credentials, $config);
 $status .= $mbpUserEvent->produceTodaysBirthdays();
 
 // Gather users (email) of todays 13th birthdays
+$config['routingKey'] = getenv("MB_USER_EVENT_13BIRTHDAY_ROUTING_KEY");
+$mbpUserEvent = new MBC_UserEvent($credentials, $config);
 $status .= $mbpUserEvent->produceTodays13thBirthdays();
 
 // Gather users (email) of todays registration anniversaries
+$config['routingKey'] = getenv("MB_USER_EVENT_ANNIVERSARY_ROUTING_KEY");
+$mbpUserEvent = new MBC_UserEvent($credentials, $config);
 $status .= $mbpUserEvent->produceTodaysAnniversaries();
 
 print $status;

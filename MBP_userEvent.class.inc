@@ -3,22 +3,15 @@
  * MBC_UserEvent class - functionality related to the Message Broker
  * producer mbp-user-event.
  */
-class MBC_UserRegistration
+class MBC_UserEvent
 {
   
-    /**
+  /**
    * Message Broker object that details the connection to RabbitMQ.
    *
    * @var object
    */
-  private $MessageBroker;
-
-  /**
-   * Details of the channel connection in use by RabbitMQ.
-   *
-   * @var object
-   */
-  private $channel;
+  private $messageBroker;
 
   /**
    * Collection of configuration settings.
@@ -49,34 +42,40 @@ class MBC_UserRegistration
     $this->credentials = $credentials;
 
     // Setup RabbitMQ connection
-    $this->MessageBroker = new MessageBroker($credentials, $config);
-    
+    $this->messageBroker = new MessageBroker($credentials, $config);
   }
   
   /* 
    * Produce entries in the MB_USER_EVENT_BIRTHDAY_QUEUE
    */
   public function produceTodaysBirthdays() {
-    
-    $todayStamp = strtotime('00:00:01');
-    $userApiUrl = getenv('DS_USER_API_HOST') . ':' . getenv('DS_USER_API_PORT') . '/users?birthdate=' . $todayStamp;
-    
+
+//    $todayDate = date('Y-n-j');
+    $todayDate = '2014-12-18';
+    $userApiUrl = getenv('DS_USER_API_HOST') . ':' . getenv('DS_USER_API_PORT') . '/users?birthdate=' . $todayDate;
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $userApiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    $result = curl_exec($ch);
+    $jsonResult = curl_exec($ch);
     curl_close($ch);
-    
-    // Decode result into array
-    
-    // Set routing key for exchange to direct message to
-    // MB_USER_EVENT_BIRTHDAY_ROUTING_KEY
-    
-    // Loop through returned items
-    
-    // Create queue entry
-    $this->MessageBroker->publishMessage($payload);
-    
+
+    $results = json_decode($jsonResult);
+
+    foreach($results as $result) {
+      if (!isset($result->first_name) ||  $result->first_name == '') {
+        $result->first_name = 'Doer';
+      }
+      $payload = array(
+        'email' => $result->email,
+        'merge_vars' => array(
+          'FNAME' => $result->first_name,
+        )
+      );
+      $payload = serialize($payload);
+      $this->messageBroker->publishMessage($payload);
+    }
+
   }
   
   /*
