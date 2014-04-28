@@ -50,8 +50,7 @@ class MBC_UserEvent
    */
   public function produceTodaysBirthdays() {
 
-//    $todayDate = date('Y-n-j');
-    $todayDate = '2014-12-18';
+    $todayDate = date('n-j');
     $userApiUrl = getenv('DS_USER_API_HOST') . ':' . getenv('DS_USER_API_PORT') . '/users?birthdate=' . $todayDate;
 
     $ch = curl_init();
