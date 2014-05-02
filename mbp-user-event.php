@@ -65,20 +65,22 @@ $config = array(
 
 $status = NULL;
 
+echo '------- mbp-user-event START: ' . date('D M j G:i:s T Y') . ' -------', "\n";
+
 // Kick off
 // Gather users (email) of todays birthdays
 $config['routingKey'] = getenv("MB_USER_EVENT_BIRTHDAY_ROUTING_KEY");
 $mbpUserEvent = new MBC_UserEvent($credentials, $config);
-$status .= $mbpUserEvent->produceTodaysBirthdays();
+$mbpUserEvent->produceTodaysBirthdays();
 
 // Gather users (email) of todays 13th birthdays
 $config['routingKey'] = getenv("MB_USER_EVENT_13BIRTHDAY_ROUTING_KEY");
 $mbpUserEvent = new MBC_UserEvent($credentials, $config);
-$status .= $mbpUserEvent->produceTodays13thBirthdays();
+// $mbpUserEvent->produceTodays13thBirthdays();
 
 // Gather users (email) of todays registration anniversaries
 $config['routingKey'] = getenv("MB_USER_EVENT_ANNIVERSARY_ROUTING_KEY");
 $mbpUserEvent = new MBC_UserEvent($credentials, $config);
-$status .= $mbpUserEvent->produceTodaysAnniversaries();
+$mbpUserEvent->produceTodaysAnniversaries();
 
-print $status;
+echo '------- mbp-user-event END: ' . date('D M j G:i:s T Y') . ' -------', "\n";
