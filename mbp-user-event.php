@@ -1,11 +1,10 @@
 <?php
 /**
- * mbc-registration-email.php
+ * mbp-user-event.php
  *
- * Collect new user registrations from the userRegistrationQueue as a batch job.
- * A collection of entries will result in a batch submission to create
- * entries/accounts in MailChimp. The MailChimp accounts are used to build
- * segments for mass mailouts.
+ * Collect users for different event types based on a specific date (typically
+ * today). Users found are added to the event queues to be consumed by
+ * mbc-user-event.
  */
 
 // Load up the Composer autoload magic
@@ -76,7 +75,7 @@ $mbpUserEvent->produceTodaysBirthdays();
 // Gather users (email) of todays 13th birthdays
 $config['routingKey'] = getenv("MB_USER_EVENT_13BIRTHDAY_ROUTING_KEY");
 $mbpUserEvent = new MBC_UserEvent($credentials, $config);
-// $mbpUserEvent->produceTodays13thBirthdays();
+$mbpUserEvent->produceTodays13thBirthdays();
 
 // Gather users (email) of todays registration anniversaries
 $config['routingKey'] = getenv("MB_USER_EVENT_ANNIVERSARY_ROUTING_KEY");

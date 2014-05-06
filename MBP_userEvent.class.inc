@@ -66,7 +66,7 @@ class MBC_UserEvent
 
     echo '------- mbp-user-event->produceTodays13thBirthdays() START: ' . date('D M j G:i:s T Y') . ' -------', "\n";
 
-    $todayDate = date('n-j');
+    $todayDate = date('n-j') . date('Y') - 13;
     $userApiUrl = getenv('DS_USER_API_HOST') . ':' . getenv('DS_USER_API_PORT') . '/users?13thbirthdate=' . $todayDate;
 
     $this->populateQueue($userApiUrl);
@@ -81,7 +81,7 @@ class MBC_UserEvent
     echo '------- mbp-user-event->produceTodaysAnniversaries() START: ' . date('D M j G:i:s T Y') . ' -------', "\n";
 
     // @todo: Need a limit from the User API of users who are having their one year anniversary only, no other years
-    $todayDate = date('n-j');
+    $todayDate = date('n-j') . date('Y') - 1;
     $userApiUrl = getenv('DS_USER_API_HOST') . ':' . getenv('DS_USER_API_PORT') . '/users?drupal_register_date=' . $todayDate;
 
     $this->populateQueue($userApiUrl);
