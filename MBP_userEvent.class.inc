@@ -114,7 +114,7 @@ class MBC_UserEvent
       $payload = array(
         'email' => $result->email,
         'merge_vars' => array(
-          'FNAME' => $result->first_name,
+          'FNAME' => ucwords(strtolower($result->first_name)),
         )
       );
       $payload = serialize($payload);
