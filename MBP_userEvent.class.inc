@@ -1,4 +1,7 @@
 <?php
+
+use DoSomething\MBStatTracker\StatHat;
+
 /**
  * MBC_UserEvent class - functionality related to the Message Broker
  * producer mbp-user-event.
@@ -28,6 +31,13 @@ class MBC_UserEvent
   private $credentials;
 
   /**
+   * Setting from external services - Mailchimp.
+   *
+   * @var array
+   */
+  private $statHat;
+
+  /**
    * Constructor for MBC_UserEvent
    *
    * @param array $credentials
@@ -43,6 +53,9 @@ class MBC_UserEvent
 
     // Setup RabbitMQ connection
     $this->messageBroker = new MessageBroker($credentials, $config);
+
+    $this->statHat = new StatHat($settings['stathat_ez_key'], 'mbp_user_event:');
+    $this->statHat->setIsProduction(TRUE);
   }
 
   /* 
@@ -107,7 +120,7 @@ class MBC_UserEvent
     curl_close($ch);
     $results = json_decode($jsonResult);
 
-    foreach($results as $result) {
+    foreach($results as $resultCount => $result) {
       if (!isset($result->first_name) ||  $result->first_name == '') {
         $result->first_name = 'Doer';
       }
@@ -122,6 +135,9 @@ class MBC_UserEvent
       $payload = serialize($payload);
       $this->messageBroker->publishMessage($payload);
     }
+
+    $this->statHat->addStatName($userApiUrl);
+    $this->statHat->reportCount($resultCount);
 
   }
 
