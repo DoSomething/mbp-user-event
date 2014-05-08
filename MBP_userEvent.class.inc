@@ -113,6 +113,8 @@ class MBC_UserEvent
       }
       $payload = array(
         'email' => $result->email,
+        'year' => $result->year,
+        'drupal_uid' => $result->drupal_uid,
         'merge_vars' => array(
           'FNAME' => ucwords(strtolower($result->first_name)),
         )

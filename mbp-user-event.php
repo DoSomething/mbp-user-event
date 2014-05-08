@@ -75,12 +75,12 @@ $mbpUserEvent->produceTodaysBirthdays();
 // Gather users (email) of todays 13th birthdays
 $config['routingKey'] = getenv("MB_USER_EVENT_13BIRTHDAY_ROUTING_KEY");
 $mbpUserEvent = new MBC_UserEvent($credentials, $config);
-// $mbpUserEvent->produceTodays13thBirthdays();
+$mbpUserEvent->produceTodays13thBirthdays();
 
 // Gather users (email) of todays one year (see todo for support of more than
 // 1st anniversary support) registration anniversaries
 $config['routingKey'] = getenv("MB_USER_EVENT_ANNIVERSARY_ROUTING_KEY");
 $mbpUserEvent = new MBC_UserEvent($credentials, $config);
-// $mbpUserEvent->produceTodaysAnniversaries();
+$mbpUserEvent->produceTodaysAnniversaries();
 
 echo '------- mbp-user-event END: ' . date('D M j G:i:s T Y') . ' -------', "\n";
