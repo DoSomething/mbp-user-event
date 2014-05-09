@@ -54,7 +54,7 @@ class MBP_UserEvent
     // Setup RabbitMQ connection
     $this->messageBroker = new MessageBroker($credentials, $config);
 
-    $this->statHat = new StatHat($settings['stathat_ez_key'], 'mbp_user_event:');
+    $this->statHat = new StatHat($settings['stathat_ez_key'], 'mbp-user-event:');
     $this->statHat->setIsProduction(TRUE);
   }
 
