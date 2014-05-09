@@ -1,9 +1,12 @@
 <?php
+
+use DoSomething\MBStatTracker\StatHat;
+
 /**
  * MBC_UserEvent class - functionality related to the Message Broker
  * producer mbp-user-event.
  */
-class MBC_UserEvent
+class MBP_UserEvent
 {
   
   /**
@@ -28,6 +31,13 @@ class MBC_UserEvent
   private $credentials;
 
   /**
+   * Setting from external services - Mailchimp.
+   *
+   * @var array
+   */
+  private $statHat;
+
+  /**
    * Constructor for MBC_UserEvent
    *
    * @param array $credentials
@@ -36,13 +46,16 @@ class MBC_UserEvent
    * @param array $config
    *   Configuration settings from mb-config.inc
    */
-  public function __construct($credentials, $config) {
+  public function __construct($credentials, $config, $settings) {
 
     $this->config = $config;
     $this->credentials = $credentials;
 
     // Setup RabbitMQ connection
     $this->messageBroker = new MessageBroker($credentials, $config);
+
+    $this->statHat = new StatHat($settings['stathat_ez_key'], 'mbp-user-event:');
+    $this->statHat->setIsProduction(TRUE);
   }
 
   /* 
@@ -107,7 +120,7 @@ class MBC_UserEvent
     curl_close($ch);
     $results = json_decode($jsonResult);
 
-    foreach($results as $result) {
+    foreach($results as $resultCount => $result) {
       if (!isset($result->first_name) ||  $result->first_name == '') {
         $result->first_name = 'Doer';
       }
@@ -122,6 +135,11 @@ class MBC_UserEvent
       $payload = serialize($payload);
       $this->messageBroker->publishMessage($payload);
     }
+
+    // Extract stat name from URL sent to User API end point
+    $statName = substr(substr($userApiUrl, strpos($userApiUrl, '?') + 1), 0, strpos(substr($userApiUrl, strpos($userApiUrl, '?') + 1), '='));
+    $this->statHat->addStatName($statName);
+    $this->statHat->reportCount($resultCount);
 
   }
 

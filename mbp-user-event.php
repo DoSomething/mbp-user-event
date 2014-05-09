@@ -61,6 +61,9 @@ $config = array(
     ),
   ),
 );
+$settings = array(
+  'stathat_ez_key' => getenv("STATHAT_EZKEY"),
+);
 
 $status = NULL;
 
@@ -69,18 +72,18 @@ echo '------- mbp-user-event START: ' . date('D M j G:i:s T Y') . ' -------', "\
 // Kick off
 // Gather users (email) of todays birthdays
 $config['routingKey'] = getenv("MB_USER_EVENT_BIRTHDAY_ROUTING_KEY");
-$mbpUserEvent = new MBC_UserEvent($credentials, $config);
+$mbpUserEvent = new MBP_UserEvent($credentials, $config, $settings);
 $mbpUserEvent->produceTodaysBirthdays();
 
 // Gather users (email) of todays 13th birthdays
 $config['routingKey'] = getenv("MB_USER_EVENT_13BIRTHDAY_ROUTING_KEY");
-$mbpUserEvent = new MBC_UserEvent($credentials, $config);
+$mbpUserEvent = new MBP_UserEvent($credentials, $config, $settings);
 $mbpUserEvent->produceTodays13thBirthdays();
 
 // Gather users (email) of todays one year (see todo for support of more than
 // 1st anniversary support) registration anniversaries
 $config['routingKey'] = getenv("MB_USER_EVENT_ANNIVERSARY_ROUTING_KEY");
-$mbpUserEvent = new MBC_UserEvent($credentials, $config);
+$mbpUserEvent = new MBP_UserEvent($credentials, $config, $settings);
 $mbpUserEvent->produceTodaysAnniversaries();
 
 echo '------- mbp-user-event END: ' . date('D M j G:i:s T Y') . ' -------', "\n";
