@@ -1,7 +1,7 @@
 {
     "name": "DoSomething/mbp-user-event",
     "type": "library",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "A producer app for the Message Broker system that produces entries to the topicUserEventExchange. The messages are based on non transactional user events such as birthdays and registration anniversaries.",
     "keywords": ["message broker"],
     "homepage": "https://github.com/DoSomething/mbp-user-event",
