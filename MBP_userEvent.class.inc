@@ -6,7 +6,7 @@ use DoSomething\MBStatTracker\StatHat;
  * MBC_UserEvent class - functionality related to the Message Broker
  * producer mbp-user-event.
  */
-class MBC_UserEvent
+class MBP_UserEvent
 {
   
   /**
@@ -46,7 +46,7 @@ class MBC_UserEvent
    * @param array $config
    *   Configuration settings from mb-config.inc
    */
-  public function __construct($credentials, $config) {
+  public function __construct($credentials, $config, $settings) {
 
     $this->config = $config;
     $this->credentials = $credentials;
@@ -136,7 +136,9 @@ class MBC_UserEvent
       $this->messageBroker->publishMessage($payload);
     }
 
-    $this->statHat->addStatName($userApiUrl);
+    // Extract stat name from URL sent to User API end point
+    $statName = substr(substr($userApiUrl, strpos($userApiUrl, '?') + 1), 0, strpos(substr($userApiUrl, strpos($userApiUrl, '?') + 1), '='));
+    $this->statHat->addStatName($statName);
     $this->statHat->reportCount($resultCount);
 
   }
