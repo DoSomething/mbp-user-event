@@ -115,7 +115,6 @@ class MBP_UserEvent
 
     // Extract stat name from URL sent to User API end point
     $statName = substr(substr($userApiUrl, strpos($userApiUrl, '?') + 1), 0, strpos(substr($userApiUrl, strpos($userApiUrl, '?') + 1), '='));
-    $this->statHat->addStatName($statName);
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $userApiUrl);
@@ -140,11 +139,11 @@ class MBP_UserEvent
         $payload = serialize($payload);
         $this->messageBroker->publishMessage($payload);
       }
+      $this->statHat->addStatName($statName);
     }
     else {
       $resultCount = 1;
-      $this->statHat->clearAddedStatNames();
-      $this->statHat->addStatName($statName . ' - ERROR, zero results returned from MB User API.');
+      $this->statHat->addStatName($statName . ' - ERROR: mb-user-api 0 results');
     }
 
     $this->statHat->reportCount($resultCount);
