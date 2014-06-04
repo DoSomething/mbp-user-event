@@ -113,6 +113,10 @@ class MBP_UserEvent
    */
   private function populateQueue($userApiUrl) {
 
+    // Extract stat name from URL sent to User API end point
+    $statName = substr(substr($userApiUrl, strpos($userApiUrl, '?') + 1), 0, strpos(substr($userApiUrl, strpos($userApiUrl, '?') + 1), '='));
+    $this->statHat->addStatName($statName);
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $userApiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -120,27 +124,30 @@ class MBP_UserEvent
     curl_close($ch);
     $results = json_decode($jsonResult);
 
-    foreach($results as $resultCount => $result) {
-      if (!isset($result->first_name) ||  $result->first_name == '') {
-        $result->first_name = 'Doer';
+    if (count($results) > 0) {
+      foreach($results as $resultCount => $result) {
+        if (!isset($result->first_name) ||  $result->first_name == '') {
+          $result->first_name = 'Doer';
+        }
+        $payload = array(
+          'email' => $result->email,
+          'year' => $result->year,
+          'drupal_uid' => $result->drupal_uid,
+          'merge_vars' => array(
+            'FNAME' => ucwords(strtolower($result->first_name)),
+          )
+        );
+        $payload = serialize($payload);
+        $this->messageBroker->publishMessage($payload);
       }
-      $payload = array(
-        'email' => $result->email,
-        'year' => $result->year,
-        'drupal_uid' => $result->drupal_uid,
-        'merge_vars' => array(
-          'FNAME' => ucwords(strtolower($result->first_name)),
-        )
-      );
-      $payload = serialize($payload);
-      $this->messageBroker->publishMessage($payload);
+    }
+    else {
+      $resultCount = 1;
+      $this->statHat->clearAddedStatNames();
+      $this->statHat->addStatName($statName . ' - ERROR, zero results returned from MB User API.');
     }
 
-    // Extract stat name from URL sent to User API end point
-    $statName = substr(substr($userApiUrl, strpos($userApiUrl, '?') + 1), 0, strpos(substr($userApiUrl, strpos($userApiUrl, '?') + 1), '='));
-    $this->statHat->addStatName($statName);
     $this->statHat->reportCount($resultCount);
-
   }
 
 }
