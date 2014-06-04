@@ -140,13 +140,13 @@ class MBP_UserEvent
         $this->messageBroker->publishMessage($payload);
       }
       $this->statHat->addStatName($statName);
+      $this->statHat->reportCount($resultCount);
     }
     else {
-      $resultCount = 1;
       $this->statHat->addStatName($statName . ' - ERROR: mb-user-api 0 results');
+      $this->statHat->reportCount(1);
     }
 
-    $this->statHat->reportCount($resultCount);
   }
 
 }
